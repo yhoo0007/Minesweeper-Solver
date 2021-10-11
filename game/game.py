@@ -66,9 +66,9 @@ class Game:
     
     def savescreenshot(self) -> None:
         i = 1
-        while os.path.exists(os.path.join(Game.SCREENSHOT_PATH, f'screenshot{i}')):
+        while os.path.exists(os.path.join(Game.SCREENSHOT_PATH, f'screenshot{i}.png')):
             i += 1
-        fp = os.path.join(Game.SCREENSHOT_PATH, f'screenshot{i}')
+        fp = os.path.join(Game.SCREENSHOT_PATH, f'screenshot{i}.png')
         self._webdriver.save_screenshot(fp)
 
     def flag(self, square: Square) -> Set[Square]:
