@@ -1,6 +1,8 @@
 # Python Minesweeper Solver
 A Minesweeper solver written in Python. This solver uses Selenium to play Minesweeper on https://minesweeperonline.com/#. It can currently complete 'expert' level games in approximately 50 seconds and has a winrate of around 30-40%. Its gameplay is very close to optimal but there are still some areas that can be improved.
 
+![example](https://github.com/yhoo0007/Minesweeper-Solver/blob/master/imgs/screenshot.png)
+
 ### Explanation
 ##### Frontiers
 A Minesweeper game can generally be split into 'frontiers' where the clues in that frontier will only have an affect each other. This allows the solver to focus on subsections of the game and not have to compute the entire game state at every iteration. This is a massive time-saver especially when it comes to calculating probabilities.
@@ -14,4 +16,4 @@ Other times the only way to proceed is to calculate the probabilities for each s
 
 
 
-\*safety is an assumption in situations where we are guessing where the bombs are.
+\*it is only safe if we assume that the locations we flagged as bombs are correct which may not always be the case in situations where guessing is required.
