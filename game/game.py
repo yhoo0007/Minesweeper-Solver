@@ -10,7 +10,7 @@ from game.square import Square
 
 
 class Game:
-    WEBDRIVER_PATH = 'E:/New folder/xtras/Minesweeper/webdriver/chromedriver.exe'
+    WEBDRIVER_PATH = 'chromedriver.exe'
     GAMEURL = 'http://minesweeperonline.com/#'
     SCREENSHOT_PATH = './screenshots'
 
@@ -27,7 +27,7 @@ class Game:
         self.bombs = bombs
         self.remaining_bombs = bombs
         self.game_over = False
-        self._webdriver = webdriver.Chrome(executable_path=Game.WEBDRIVER_PATH + difficulty)
+        self._webdriver = webdriver.Chrome(executable_path=Game.WEBDRIVER_PATH)
         self._webdriver.set_window_size(800, 600)
         self._webdriver.get(self.GAMEURL + difficulty)
         if state:
