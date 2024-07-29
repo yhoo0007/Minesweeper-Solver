@@ -1,6 +1,7 @@
 from game.square import Square
 from typing import List, Set
 from selenium.webdriver.remote.webdriver import WebDriver
+from selenium.webdriver.common.by import By
 
 
 class Grid:
@@ -8,7 +9,7 @@ class Grid:
         self.width = width
         self.height = height
         self._webdriver = webdriver
-        square_elements = self._webdriver.find_elements_by_class_name('square')
+        square_elements = self._webdriver.find_elements(By.CLASS_NAME, 'square')
         self.squares = [
             [
                 Square(col_index, row_index, element, self._webdriver) 

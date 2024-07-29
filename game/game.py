@@ -6,11 +6,11 @@ from game.grid import Grid
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
 from game.square import Square
 
 
 class Game:
-    WEBDRIVER_PATH = 'chromedriver.exe'
     GAMEURL = 'http://minesweeperonline.com/#'
     SCREENSHOT_PATH = './screenshots'
 
@@ -27,7 +27,7 @@ class Game:
         self.bombs = bombs
         self.remaining_bombs = bombs
         self.game_over = False
-        self._webdriver = webdriver.Chrome(executable_path=Game.WEBDRIVER_PATH)
+        self._webdriver = webdriver.Chrome()
         self._webdriver.set_window_size(800, 600)
         self._webdriver.get(self.GAMEURL + difficulty)
         if state:
@@ -36,11 +36,11 @@ class Game:
 
     def loadstate(self, state: str) -> None:
         action_chain = ActionChains(self._webdriver)
-        import_btn = self._webdriver.find_element_by_id('import-link')
+        import_btn = self._webdriver.find_element(By.ID, 'import-link')
         action_chain.click(import_btn)
         action_chain.send_keys(state)
         action_chain.perform()
-        load_btn = self._webdriver.find_element_by_css_selector('input[value="Load Game"]')
+        load_btn = self._webdriver.find_element(By.CSS_SELECTOR, 'input[value="Load Game"]')
         action_chain = ActionChains(self._webdriver)
         action_chain.send_keys_to_element(load_btn, Keys.ENTER)
         action_chain.perform()
