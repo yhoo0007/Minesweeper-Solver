@@ -54,8 +54,7 @@ class Game:
         action_chain.send_keys(Keys.F2)
         action_chain.perform()
         self.grid = Grid(self._webdriver, self.width, self.height)
-        for sq in self.grid:
-            sq.unhighlight()
+        for sq in self.grid: sq.unhighlight()
 
     def start(self) -> None:
         square = self.grid[self.height // 2][self.width // 2]
@@ -85,14 +84,13 @@ class Game:
 
     def open_multiple(self, to_open):
         ret = False
-        for sq in to_open:
-            sq.highlight('green')
+        # for sq in to_open: sq.highlight('green')
         for sq in to_open:
             ret |= self.grid.open(sq)
-            sq.unhighlight()
+            # sq.unhighlight()
         return ret
 
-    def attemptsolve(self) -> bool:
+    def attemptsolve(self):
         while not self.game_over:
             trivial_progress = False
             frontier_cache = []
@@ -107,14 +105,12 @@ class Game:
                 combined_prob = {}
                 for frontier in frontiers_to_process:
                     # highlight current frontier
-                    for sq in frontier:
-                        sq.highlight('blue')
+                    for sq in frontier: sq.highlight('blue')
 
                     probabilities = self.getprobabilities(frontier)
                     # combined_prob.update(probabilities)
                     for sq, prob in probabilities.items():
-                        if sq not in combined_prob:
-                            combined_prob[sq] = (0, 0)
+                        if sq not in combined_prob: combined_prob[sq] = (0, 0)
                         combined_prob[sq] = (combined_prob[sq][0] + prob[0], combined_prob[sq][1] + prob[1])
 
                     # flag confirmed bombs
@@ -124,31 +120,27 @@ class Game:
                     # open all non bombs
                     for sq in frontier:
                         for adj_blank in self.grid.getadj(sq, lambda sq: sq.char == Square.CHAR_BLANK):
-                            if adj_blank not in probabilities:
-                                to_open.add(adj_blank)
+                            if adj_blank not in probabilities: to_open.add(adj_blank)
 
                     # unhighlight the frontier
-                    for sq in frontier:
-                        sq.unhighlight()
+                    for sq in frontier: sq.unhighlight()
                     
-                    if to_open:
-                        break
+                    if to_open: break
 
                 if not to_open:
                     if combined_prob:
                         # take a guess by flagging the square with the highest probability
                         guess = max(
-                            filter(lambda sq: combined_prob[sq][0] / combined_prob[sq][1] != 1, combined_prob),
+                            filter(lambda sq: sq.char != Square.CHAR_FLAG, combined_prob),
                             key=lambda sq: combined_prob[sq][0] / combined_prob[sq][1]
                         )
-                        to_open.update(self.flag(guess))
-                        for k, v in combined_prob.items():
-                            print(k.__repr__(), v, v[0] / v[1])
+                        for k, v in combined_prob.items(): print(k.__repr__(), v, v[0] / v[1])
                         print('Guessing', guess.__repr__(), combined_prob[guess], combined_prob[guess][0] / combined_prob[guess][1])
+                        to_open.update(self.flag(guess))
                     elif self.remaining_bombs != 0:
-                        # this clause will be reached if there is some unreachable region of the 
-                        # grid and there are still bombs remaining. In this case, the only option
-                        # is to randomly pick a square in that region.
+                        # this clause will be reached if there is some unreachable region of the
+                        # grid and there are still bombs remaining. In this case, randomly pick a
+                        # square in that region.
                         print('Unreachable region detected')
                         blanks = list(filter(lambda sq: sq.char == Square.CHAR_BLANK, self.grid))
                         guess = blanks[0]
@@ -156,6 +148,7 @@ class Game:
                     else:
                         # unreachable region is completely safe
                         to_open.update(filter(lambda sq: sq.char == Square.CHAR_BLANK, self.grid))
+                        if not to_open: break
 
                 self.game_over |= self.open_multiple(to_open)
             
@@ -163,14 +156,16 @@ class Game:
             frontier_cache = frontiers
 
     def trivial(self, frontier: Set[Square]) -> bool:
+        '''
+        Attempt to progress trivially.
+        '''
+        pass
         to_open: Set[Square] = set()
-        for clue_sq in frontier:
-            if clue_sq.getclue():
-                adj_blanks = self.grid.getadj(clue_sq, lambda sq: sq.char == Square.CHAR_BLANK)
-                if len(adj_blanks) == clue_sq.getclue():  # and clue != 0 ?
-                    # flag all adjacent blanks
-                    for adj_blank in adj_blanks:
-                        to_open.update(self.flag(adj_blank))
+        for clue_sq in filter(lambda sq: sq.getclue(), frontier):
+            adj_blanks = self.grid.getadj(clue_sq, lambda sq: sq.char == Square.CHAR_BLANK)
+            if len(adj_blanks) == clue_sq.getclue(): # and clue != 0 ?
+                # flag all adjacent blanks
+                for adj_blank in adj_blanks: to_open.update(self.flag(adj_blank))
         if to_open:
             self.game_over |= self.open_multiple(to_open)
             return True
@@ -226,4 +221,3 @@ class Game:
             probabilities[square] = (probabilities[square], len(unique_solutions))
 
         return probabilities
-

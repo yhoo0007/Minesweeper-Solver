@@ -65,7 +65,10 @@ class Square:
     def decrementclue(self, val=1) -> int:
         if (clue := self.getclue()) is not None:
             clue = clue - val if clue >= val else 0
+            # old_char = self.char
             self.char = str(clue)
+            # update UI to show decremented value
+            # self._webdriver.execute_script(f"document.getElementById('{self.y + 1}_{self.x + 1}').classList.replace('open{old_char}', 'open{self.char}')")
             return clue
         else:
             raise Exception('Decrementing a non clue square!')

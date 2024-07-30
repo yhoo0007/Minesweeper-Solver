@@ -21,7 +21,7 @@ class Grid:
         ]
         self.clues = set(square for square in self if square.getclue())
 
-    def __getitem__(self, key):
+    def __getitem__(self, key) -> List[Square]:
         return self.squares[key]
 
     def __setitem__(self, key, item):
@@ -99,12 +99,6 @@ class Grid:
                 self.clues.remove(adj_sq)
         return sat
     
-    def _refresh_open_helper(self, square: Square, refreshed: Set[Square]) -> bool:
-        if square.char == Square.CHAR_BLANK:
-            square.click()
-            return self.refresh(square, refreshed)
-        return False
-    
     def refresh(self, start: Square, refreshed: Set[Square]=set()) -> bool:
         '''
         From the given square, refresh adjacent squares as long as they have changed. Returns a
@@ -114,12 +108,12 @@ class Grid:
         while to_refresh:
             current = to_refresh.pop()
             if current.refresh():
+                refreshed.add(current)
                 if current.char in (Square.CHAR_BOMBDEATH, Square.CHAR_BOMBREVEALED):
                     return True
                 if current.getclue() == 0:
-                    for adj in self.getadj(current, lambda sq: sq.char == Square.CHAR_BLANK and sq not in refreshed):
+                    for adj in self.getadj(current, lambda sq: sq not in refreshed):
                         to_refresh.append(adj)
-                        refreshed.add(adj)
                 else:
                     # update clue to reflect remaining value
                     adj_flags = self.getadj(current, lambda sq: sq.char == Square.CHAR_FLAG)
@@ -129,8 +123,9 @@ class Grid:
                     else:
                         # free open
                         for safe_sq in self.getadj(current, lambda sq: sq.char == Square.CHAR_BLANK):
-                            if self._refresh_open_helper(safe_sq, refreshed):
+                            if self.open(safe_sq):
                                 return True
+                            # return safe_sq.click() and self.refresh(safe_sq, refreshed)
         return False
 
 class GridIterator:

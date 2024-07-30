@@ -40,6 +40,7 @@ def driver():
         n_games = 0
         game = Game(**DIFFICULTIES['expert'], state=GAME_STATE)
         while True:
+            win = False
             tt = timer()
             game.start()
             try:
@@ -49,7 +50,8 @@ def driver():
                 wins += 1
                 tt = timer() - tt
                 sum_tt += tt
-                game.savescreenshot()
+                win = True
+            if not win: game.savescreenshot()
             n_games += 1
             print(
                 'N Games:', n_games,
