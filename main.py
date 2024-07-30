@@ -33,6 +33,7 @@ DIFFICULTIES = {
 
 
 def driver():
+    game = None
     try:
         sum_tt = 0
         wins = 0
@@ -59,7 +60,9 @@ def driver():
     except KeyboardInterrupt:
         input('Terminate >')
     finally:
-        game.close()
+        if game:
+            print('Closing game')
+            game.close()
 
 if __name__ == '__main__':
     # cProfile.run('driver()', sort='tottime')
